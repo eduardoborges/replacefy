@@ -2738,15 +2738,15 @@ async function main() {
     try {
         const file = process.env.TEST ? './test.txt' : core_1.default.getInput('file');
         if (!file) {
-            console.debug('`file` was not set, using default value.');
+            core_1.default.warning('`file` was not set, using default value.');
         }
-        console.info('Starting Process');
+        core_1.default.info('Starting Process');
         const res = await (0, replace_1.default)(file, file);
         if (res) {
-            console.info('All ok.');
+            core_1.default.info('All ok.');
         }
         else {
-            console.info('Something went wrong, check the logs.');
+            core_1.default.info('Something went wrong, check the logs.');
         }
     }
     catch (err) {
@@ -2755,7 +2755,7 @@ async function main() {
     }
 }
 main().then(() => {
-    console.info('Process finished.');
+    core_1.default.info('Process finished.');
 });
 
 
@@ -2766,10 +2766,34 @@ main().then(() => {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(186));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 /**
  * Replace Environment Variables in a file.
@@ -2785,17 +2809,17 @@ async function main(from, to = from) {
                     return contents;
                 let env = process.env[match[1]];
                 if (typeof env === 'undefined') {
-                    console.info(`Environment Variable ${match[1]} not found!`);
+                    core.info(`Environment Variable ${match[1]} not found!`);
                     result = false;
                     env = contents;
                 }
                 else {
-                    console.info(`Replacing Environment Variable ${match[1]}.`);
+                    core.info(`Replacing Environment Variable ${match[1]}.`);
                 }
                 return env;
             });
             fs_1.default.writeFileSync(to, res);
-            console.info(`File ${to} saved.`);
+            core.info(`File ${to} saved.`);
         }
         else {
             result = false;
@@ -2803,10 +2827,10 @@ async function main(from, to = from) {
     }
     catch (err) {
         if (err instanceof Error) {
-            console.error(err.message);
+            core.error(err.message);
         }
         if (typeof err === 'string') {
-            console.error(err);
+            core.error(err);
         }
     }
     return result;

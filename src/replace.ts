@@ -17,26 +17,26 @@ export default async function main(from: fs.PathLike, to = from): Promise<boolea
         let env = process.env[match[1]];
 
         if (typeof env === 'undefined') {
-          console.info(`Environment Variable ${match[1]} not found!`);
+          core.info(`Environment Variable ${match[1]} not found!`);
           result = false;
           env = contents;
         } else {
-          console.info(`Replacing Environment Variable ${match[1]}.`);
+          core.info(`Replacing Environment Variable ${match[1]}.`);
         }
 
         return env;
       });
       fs.writeFileSync(to, res);
-      console.info(`File ${to} saved.`);
+      core.info(`File ${to} saved.`);
     } else {
       result = false;
     }
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.error(err.message);
+      core.error(err.message);
     }
     if (typeof err === 'string') {
-      console.error(err);
+      core.error(err);
     }
   }
 
