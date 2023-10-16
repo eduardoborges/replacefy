@@ -5,11 +5,9 @@ import replace from './replace';
 
 async function main() {
   try {
-    const file = process.env.TEST ? './test.txt' : core.getInput('file');
+    const file = core.getInput('file');
 
-    if (!file) {
-      core.warning('`file` was not set, using default value.');
-    }
+    if (!file) core.warning('`file` was not set, using default value.');
     core.info('Starting Process');
 
     const res = await replace(file, file);
@@ -19,9 +17,10 @@ async function main() {
     } else {
       core.info('Something went wrong, check the logs.');
     }
-  } catch (err) {
-    // setFailed logs the message and sets a failing exit code
-    // core.setFailed(`Action failed with error ${err}`);
+  } catch (err: unknown) {
+    if (err instanceof Error || typeof err === 'string') {
+      core.setFailed(err);
+    }
   }
 }
 
