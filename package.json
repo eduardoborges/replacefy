@@ -57,8 +57,7 @@
     "typescript": "^5.2.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "npm run lint && npm run test && npm run build",
-    "pre-push": "npm run lint && npm run test && npm run build",
-    "commit-msg": "npm run lint && npm run test && npm run build"
+    "pre-commit": "npm run lint",
+    "pre-push": "npm run test && npm run build && git add dist; git commit -m 'chore: build'"
   }
 }
