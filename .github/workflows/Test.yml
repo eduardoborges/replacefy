@@ -1,0 +1,31 @@
+name: CI action
+on:
+  pull_request:
+    branches:
+    - main
+    - beta
+    types:
+    - synchronize
+    - edited
+    - opened
+
+jobs:
+  # test action works running from the graph
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    - name: Edit file
+      uses: ./
+      with:
+        file: 'test.txt'
+      env:
+        NAME: 'Eduardo'
+
+    - name: Show Test Output
+      run: cat test.txt
