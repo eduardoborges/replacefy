@@ -4,8 +4,8 @@ import path from 'path';
 import replace from './replace';
 
 describe('replace', () => {
-  const testFile = path.join(__dirname, '../test.txt');
-  const testFileCopy = path.join(__dirname, '../test-copy.txt');
+  const testFile = path.join(__dirname, 'test.txt');
+  const testFileCopy = path.join(__dirname, 'test-copy.txt');
 
   beforeEach(() => {
     fs.writeFileSync(testFile, 'Hello, ${NAME}!');
