@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
     - main
     - beta
@@ -56,3 +56,35 @@ jobs:
       uses: ./action.yml
       with:
         file: "./test.txt"
+
+    - name: Asset file contents
+      run: cat ./test.txt
+
+  # test action works running from the graph
+  test-action:
+    needs: semantic_pr
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    - name: Test action
+      uses: ./
+      with:
+        file: "./test.txt"
+      env:
+        NAME: "Eduardo"
+
+    - name: Asset file contents
+      run: cat ./test.txt
+
+    # trigger action failure if content of test.txt is not "test"
+    - name: Check file contents
+      run: |
+        if [ "$(cat ./test.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
