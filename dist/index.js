@@ -2732,7 +2732,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importDefault(__nccwpck_require__(186));
-const main_1 = __importDefault(__nccwpck_require__(399));
+const replace_1 = __importDefault(__nccwpck_require__(287));
 // most @actions toolkit packages have async methods
 async function main() {
     try {
@@ -2741,7 +2741,7 @@ async function main() {
             console.debug('`file` was not set, using default value.');
         }
         console.info('Starting Process');
-        const res = await (0, main_1.default)(file, file);
+        const res = await (0, replace_1.default)(file, file);
         if (res) {
             console.info('All ok.');
         }
@@ -2761,7 +2761,7 @@ main().then(() => {
 
 /***/ }),
 
-/***/ 399:
+/***/ 287:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -2773,23 +2773,21 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 /**
  * Replace Environment Variables in a file.
- * @param {PathLike} from
- * @param {PathLike} to
  */
-async function main(from, to) {
+async function main(from, to = from) {
     let result = true;
     try {
         if (fs_1.default.existsSync(from)) {
             const data = fs_1.default.readFileSync(from, 'utf8');
-            const res = data.replace(/\${\w+}/gi, (c) => {
-                const match = c.match(/\${(?<var>\w+)}/i);
+            const res = data.replace(/\${\w+}/gi, (contents) => {
+                const match = contents.match(/\${(?<var>\w+)}/i);
                 if (!match)
-                    return c;
+                    return contents;
                 let env = process.env[match[1]];
                 if (typeof env === 'undefined') {
                     console.info(`Environment Variable ${match[1]} not found!`);
                     result = false;
-                    env = c;
+                    env = contents;
                 }
                 else {
                     console.info(`Replacing Environment Variable ${match[1]}.`);
