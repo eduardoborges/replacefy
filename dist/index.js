@@ -2727,52 +2727,64 @@ exports["default"] = _default;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(186));
-const main_1 = __importDefault(__nccwpck_require__(399));
+const core = __importStar(__nccwpck_require__(186));
+const replace_1 = __importDefault(__nccwpck_require__(287));
 // most @actions toolkit packages have async methods
 async function main() {
     try {
-        const from = core_1.default.getInput('from_file');
-        const to = core_1.default.getInput('to_file');
-        if (!from) {
-            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
-        }
-        if (!to) {
-            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
-        }
-        core_1.default.info('Starting Process');
-        // split GITHUB_REPOSITORY into REPOSITORY_ACCOUNT and REPOSITORY_SLUG
-        const repo = process.env.GITHUB_REPOSITORY.split('/');
-        const account = repo[0];
-        const slug = repo[1];
-        process.env.REPOSITORY_ACCOUNT = account;
-        process.env.REPOSITORY_SLUG = slug;
-        // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-        const res = await (0, main_1.default)(from, to);
+        const file = core.getInput('file');
+        if (!file)
+            core.warning('`file` was not set, using default value.');
+        core.info('Starting Process');
+        const res = await (0, replace_1.default)(file, file);
         if (res) {
-            core_1.default.info('All ok.');
+            core.info('All ok.');
         }
         else {
-            core_1.default.info('Something went wrong, check the logs.');
+            core.info('Something went wrong, check the logs.');
         }
     }
     catch (err) {
-        // setFailed logs the message and sets a failing exit code
-        core_1.default.setFailed(`Action failed with error ${err}`);
+        if (err instanceof Error || typeof err === 'string') {
+            core.setFailed(err);
+        }
     }
 }
 main().then(() => {
-    core_1.default.info('Process finished.');
+    core.info('Process finished.');
 });
 
 
 /***/ }),
 
-/***/ 399:
+/***/ 287:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -2808,23 +2820,21 @@ const core = __importStar(__nccwpck_require__(186));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 /**
  * Replace Environment Variables in a file.
- * @param {PathLike} from
- * @param {PathLike} to
  */
-async function main(from, to) {
+async function main(from, to = from) {
     let result = true;
     try {
         if (fs_1.default.existsSync(from)) {
             const data = fs_1.default.readFileSync(from, 'utf8');
-            const res = data.replace(/\${\w+}/gi, (c) => {
-                const match = c.match(/\${(?<var>\w+)}/i);
+            const res = data.replace(/\${\w+}/gi, (contents) => {
+                const match = contents.match(/\${(?<var>\w+)}/i);
                 if (!match)
-                    return c;
+                    return contents;
                 let env = process.env[match[1]];
                 if (typeof env === 'undefined') {
-                    core.warning(`Environment Variable ${match[1]} not found!`);
+                    core.info(`Environment Variable ${match[1]} not found!`);
                     result = false;
-                    env = c;
+                    env = contents;
                 }
                 else {
                     core.info(`Replacing Environment Variable ${match[1]}.`);
@@ -2832,6 +2842,7 @@ async function main(from, to) {
                 return env;
             });
             fs_1.default.writeFileSync(to, res);
+            core.setOutput('file', res);
             core.info(`File ${to} saved.`);
         }
         else {
@@ -2840,10 +2851,10 @@ async function main(from, to) {
     }
     catch (err) {
         if (err instanceof Error) {
-            core.error(err.message);
+            console.error(err.message);
         }
         if (typeof err === 'string') {
-            core.error(err);
+            console.error(err);
         }
     }
     return result;
