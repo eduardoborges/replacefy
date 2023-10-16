@@ -2727,26 +2727,49 @@ exports["default"] = _default;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(186));
+const core = __importStar(__nccwpck_require__(186));
 const replace_1 = __importDefault(__nccwpck_require__(287));
 // most @actions toolkit packages have async methods
 async function main() {
     try {
-        const file = process.env.TEST ? './test.txt' : core_1.default.getInput('file');
+        const file = process.env.TEST ? './test.txt' : core.getInput('file');
         if (!file) {
-            core_1.default.warning('`file` was not set, using default value.');
+            core.warning('`file` was not set, using default value.');
         }
-        core_1.default.info('Starting Process');
+        core.info('Starting Process');
         const res = await (0, replace_1.default)(file, file);
         if (res) {
-            core_1.default.info('All ok.');
+            core.info('All ok.');
         }
         else {
-            core_1.default.info('Something went wrong, check the logs.');
+            core.info('Something went wrong, check the logs.');
         }
     }
     catch (err) {
@@ -2755,7 +2778,7 @@ async function main() {
     }
 }
 main().then(() => {
-    core_1.default.info('Process finished.');
+    core.info('Process finished.');
 });
 
 

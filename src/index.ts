@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import * as core from '@actions/core';
 import replace from './replace';
 
 // most @actions toolkit packages have async methods
