@@ -23,20 +23,20 @@ export default async function main(from: fs.PathLike, to = from): Promise<boolea
         } else {
           core.info(`Replacing Environment Variable ${match[1]}.`);
         }
-
         return env;
       });
       fs.writeFileSync(to, res);
+      core.setOutput('file', res);
       core.info(`File ${to} saved.`);
     } else {
       result = false;
     }
   } catch (err: unknown) {
     if (err instanceof Error) {
-      core.error(err.message);
+      console.error(err.message);
     }
     if (typeof err === 'string') {
-      core.error(err);
+      console.error(err);
     }
   }
 

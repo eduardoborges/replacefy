@@ -2819,6 +2819,7 @@ async function main(from, to = from) {
                 return env;
             });
             fs_1.default.writeFileSync(to, res);
+            core.setOutput('file', res);
             core.info(`File ${to} saved.`);
         }
         else {
@@ -2827,10 +2828,10 @@ async function main(from, to = from) {
     }
     catch (err) {
         if (err instanceof Error) {
-            core.error(err.message);
+            console.error(err.message);
         }
         if (typeof err === 'string') {
-            core.error(err);
+            console.error(err);
         }
     }
     return result;
