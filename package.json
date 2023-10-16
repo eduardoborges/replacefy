@@ -1,7 +1,7 @@
 {
   "name": "replacefy",
   "description": "A simple GitHub Action to replace env vars",
-  "version": "0.0.0",
+  "version": "1.0.0-beta.1",
   "author": "Eduardo Borges <euduardoborges@gmail.com>",
   "private": true,
   "license": "MIT",
