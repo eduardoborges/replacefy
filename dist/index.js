@@ -2722,6 +2722,56 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 144:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __importDefault(__nccwpck_require__(186));
+const main_1 = __importDefault(__nccwpck_require__(399));
+// most @actions toolkit packages have async methods
+async function main() {
+    try {
+        const from = core_1.default.getInput('from_file');
+        const to = core_1.default.getInput('to_file');
+        if (!from) {
+            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
+        }
+        if (!to) {
+            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
+        }
+        core_1.default.info('Starting Process');
+        // split GITHUB_REPOSITORY into REPOSITORY_ACCOUNT and REPOSITORY_SLUG
+        const repo = process.env.GITHUB_REPOSITORY.split('/');
+        const account = repo[0];
+        const slug = repo[1];
+        process.env.REPOSITORY_ACCOUNT = account;
+        process.env.REPOSITORY_SLUG = slug;
+        // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+        const res = await (0, main_1.default)(from, to);
+        if (res) {
+            core_1.default.info('All ok.');
+        }
+        else {
+            core_1.default.info('Something went wrong, check the logs.');
+        }
+    }
+    catch (err) {
+        // setFailed logs the message and sets a failing exit code
+        core_1.default.setFailed(`Action failed with error ${err}`);
+    }
+}
+main().then(() => {
+    core_1.default.info('Process finished.');
+});
+
+
+/***/ }),
+
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -2750,58 +2800,55 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const wait_1 = __nccwpck_require__(259);
+const fs_1 = __importDefault(__nccwpck_require__(147));
 /**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
+ * Replace Environment Variables in a file.
+ * @param {PathLike} from
+ * @param {PathLike} to
  */
-async function run() {
+async function main(from, to) {
+    let result = true;
     try {
-        const ms = core.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
-        core.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        core.setOutput('time', new Date().toTimeString());
-    }
-    catch (error) {
-        // Fail the workflow run if an error occurs
-        if (error instanceof Error)
-            core.setFailed(error.message);
-    }
-}
-exports.run = run;
-
-
-/***/ }),
-
-/***/ 259:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
-/**
- * Wait for a number of milliseconds.
- * @param milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
-            throw new Error('milliseconds not a number');
+        if (fs_1.default.existsSync(from)) {
+            const data = fs_1.default.readFileSync(from, 'utf8');
+            const res = data.replace(/\${\w+}/gi, (c) => {
+                const match = c.match(/\${(?<var>\w+)}/i);
+                if (!match)
+                    return c;
+                let env = process.env[match[1]];
+                if (typeof env === 'undefined') {
+                    core.warning(`Environment Variable ${match[1]} not found!`);
+                    result = false;
+                    env = c;
+                }
+                else {
+                    core.info(`Replacing Environment Variable ${match[1]}.`);
+                }
+                return env;
+            });
+            fs_1.default.writeFileSync(to, res);
+            core.info(`File ${to} saved.`);
         }
-        setTimeout(() => resolve('done!'), milliseconds);
-    });
+        else {
+            result = false;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            core.error(err.message);
+        }
+        if (typeof err === 'string') {
+            core.error(err);
+        }
+    }
+    return result;
 }
-exports.wait = wait;
+exports["default"] = main;
 
 
 /***/ }),
@@ -2932,22 +2979,12 @@ module.exports = require("util");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-/**
- * The entrypoint for the action.
- */
-const main_1 = __nccwpck_require__(399);
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-(0, main_1.run)();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(144);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
