@@ -2736,37 +2736,26 @@ const main_1 = __importDefault(__nccwpck_require__(399));
 // most @actions toolkit packages have async methods
 async function main() {
     try {
-        const from = core_1.default.getInput('from_file');
-        const to = core_1.default.getInput('to_file');
-        if (!from) {
-            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
+        const file = process.env.TEST ? './test.txt' : core_1.default.getInput('file');
+        if (!file) {
+            console.debug('`file` was not set, using default value.');
         }
-        if (!to) {
-            core_1.default.warning('`from_file` was not set, defaults to `README.md`');
-        }
-        core_1.default.info('Starting Process');
-        // split GITHUB_REPOSITORY into REPOSITORY_ACCOUNT and REPOSITORY_SLUG
-        const repo = process.env.GITHUB_REPOSITORY.split('/');
-        const account = repo[0];
-        const slug = repo[1];
-        process.env.REPOSITORY_ACCOUNT = account;
-        process.env.REPOSITORY_SLUG = slug;
-        // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-        const res = await (0, main_1.default)(from, to);
+        console.info('Starting Process');
+        const res = await (0, main_1.default)(file, file);
         if (res) {
-            core_1.default.info('All ok.');
+            console.info('All ok.');
         }
         else {
-            core_1.default.info('Something went wrong, check the logs.');
+            console.info('Something went wrong, check the logs.');
         }
     }
     catch (err) {
         // setFailed logs the message and sets a failing exit code
-        core_1.default.setFailed(`Action failed with error ${err}`);
+        // core.setFailed(`Action failed with error ${err}`);
     }
 }
 main().then(() => {
-    core_1.default.info('Process finished.');
+    console.info('Process finished.');
 });
 
 
@@ -2777,34 +2766,10 @@ main().then(() => {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(186));
 const fs_1 = __importDefault(__nccwpck_require__(147));
 /**
  * Replace Environment Variables in a file.
@@ -2822,17 +2787,17 @@ async function main(from, to) {
                     return c;
                 let env = process.env[match[1]];
                 if (typeof env === 'undefined') {
-                    core.warning(`Environment Variable ${match[1]} not found!`);
+                    console.info(`Environment Variable ${match[1]} not found!`);
                     result = false;
                     env = c;
                 }
                 else {
-                    core.info(`Replacing Environment Variable ${match[1]}.`);
+                    console.info(`Replacing Environment Variable ${match[1]}.`);
                 }
                 return env;
             });
             fs_1.default.writeFileSync(to, res);
-            core.info(`File ${to} saved.`);
+            console.info(`File ${to} saved.`);
         }
         else {
             result = false;
@@ -2840,10 +2805,10 @@ async function main(from, to) {
     }
     catch (err) {
         if (err instanceof Error) {
-            core.error(err.message);
+            console.error(err.message);
         }
         if (typeof err === 'string') {
-            core.error(err);
+            console.error(err);
         }
     }
     return result;

@@ -18,26 +18,26 @@ export default async function main(from: string, to: string): Promise<boolean> {
         let env = process.env[match[1]];
 
         if (typeof env === 'undefined') {
-          core.warning(`Environment Variable ${match[1]} not found!`);
+          console.info(`Environment Variable ${match[1]} not found!`);
           result = false;
           env = c;
         } else {
-          core.info(`Replacing Environment Variable ${match[1]}.`);
+          console.info(`Replacing Environment Variable ${match[1]}.`);
         }
 
         return env;
       });
       fs.writeFileSync(to, res);
-      core.info(`File ${to} saved.`);
+      console.info(`File ${to} saved.`);
     } else {
       result = false;
     }
   } catch (err: unknown) {
     if (err instanceof Error) {
-      core.error(err.message);
+      console.error(err.message);
     }
     if (typeof err === 'string') {
-      core.error(err);
+      console.error(err);
     }
   }
 
