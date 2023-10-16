@@ -32,7 +32,7 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node
       uses: actions/setup-node@v3
@@ -51,14 +51,6 @@ jobs:
 
     - name: Run Build
       run: npm run build
-
-    - name: Run Health Check
-      uses: ./action.yml
-      with:
-        file: "./test.txt"
-
-    - name: Asset file contents
-      run: cat ./test.txt
 
   # test action works running from the graph
   test-action:
