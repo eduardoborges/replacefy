@@ -63,6 +63,10 @@ jobs:
         # a pull request then we can checkout the head.
         fetch-depth: 2
 
+    - name: Create file
+      run: |
+        echo "Hello, __NAME__" > ./test.txt
+
     - name: Test action
       uses: ./
       with:
