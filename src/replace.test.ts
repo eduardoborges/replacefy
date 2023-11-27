@@ -1,36 +1,68 @@
-/* eslint-disable no-template-curly-in-string */
-import fs from 'fs';
-import path from 'path';
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+import fs from 'fs/promises';
+import { glob } from 'glob';
 import replace from './replace';
 
-describe('replace', () => {
-  const testFile = path.join(__dirname, 'test.txt');
-  const testFileCopy = path.join(__dirname, 'test-copy.txt');
+describe('.replace', () => {
+  const TEST_FOLDER = './test';
 
-  beforeEach(() => {
-    fs.writeFileSync(testFile, 'Hello, ${NAME}!');
+  beforeEach(async () => {
+    await fs.mkdir(TEST_FOLDER, { recursive: true });
+    await fs.writeFile(`${TEST_FOLDER}/1.txt`, 'Hello, __NAME__!', 'utf8');
+    await fs.writeFile(`${TEST_FOLDER}/2.txt`, 'Hello, {{NAME}}!', 'utf8');
+    await fs.writeFile(`${TEST_FOLDER}/3.txt`, 'Hello, {{NAME}} __NAME__!', 'utf8');
   });
 
-  afterEach(() => {
-    try {
-      fs.unlinkSync(testFile);
-      fs.unlinkSync(testFileCopy);
-    } catch (err: unknown) {
-      //
-    }
+  afterEach(async () => {
+    await fs.rm(TEST_FOLDER, { recursive: true });
   });
 
-  it('should replace environment variables in a file', async () => {
+  it('should replace matching __NAME__ pattern ', async () => {
+    const file = `${TEST_FOLDER}/1.txt`;
     process.env.NAME = 'World';
-    const result = await replace(testFile, testFileCopy);
-    expect(result).toBe(true);
 
-    const contents = fs.readFileSync(testFileCopy, 'utf8');
+    const result = await replace(file);
+    const contents = await fs.readFile(file, 'utf8');
+
+    expect(result).toBe(true);
     expect(contents).toBe('Hello, World!');
   });
 
-  it('should return false if the file does not exist', async () => {
-    const result = await replace('nonexistent.txt', testFileCopy);
-    expect(result).toBe(false);
+  it('should replace matching {{NAME}} pattern', async () => {
+    const file = `${TEST_FOLDER}/2.txt`;
+    process.env.NAME = 'World';
+
+    const result = await replace(file);
+    const contents = await fs.readFile(file, 'utf8');
+
+    expect(result).toBe(true);
+    expect(contents).toBe('Hello, World!');
+  });
+
+  it('should replace matching {{NAME}} and __NAME__ pattern', async () => {
+    const file = `${TEST_FOLDER}/3.txt`;
+    process.env.NAME = 'World';
+
+    const result = await replace(file);
+    const contents = await fs.readFile(file, 'utf8');
+
+    expect(result).toBe(true);
+    expect(contents).toBe('Hello, World World!');
+  });
+
+  it('should replace matching txt files and all patterns', async () => {
+    const match = `${TEST_FOLDER}/*.txt`;
+    process.env.NAME = 'World';
+
+    const result = await replace(match);
+    const files = await glob(match);
+
+    expect(result).toBe(true);
+
+    for (const file of files) {
+      const contents = await fs.readFile(file, 'utf8');
+      expect(contents).toMatch(/Hello, World!|Hello, World World!/g);
+    }
   });
 });

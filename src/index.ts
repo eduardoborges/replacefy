@@ -10,14 +10,14 @@ async function main() {
     if (!file) core.warning('`file` was not set, using default value.');
     core.info('Starting Process');
 
-    const res = await replace(file, file);
+    const res = await replace(file);
 
     if (res) {
       core.info('All ok.');
     } else {
       core.info('Something went wrong, check the logs.');
     }
-  } catch (err: unknown) {
+  } catch (err) {
     if (err instanceof Error || typeof err === 'string') {
       core.setFailed(err);
     }

@@ -1,29 +1,29 @@
 module.exports = {
-  "preset": "ts-jest",
-  "verbose": true,
-  "clearMocks": true,
-  "testEnvironment": "node",
-  "moduleFileExtensions": [
-    "js",
-    "ts"
+  preset: 'ts-jest',
+  verbose: true,
+  clearMocks: true,
+  testEnvironment: 'node',
+  moduleFileExtensions: [
+    'js',
+    'ts',
   ],
-  "testMatch": [
-    "**/*.test.ts"
+  testMatch: [
+    '**/*.test.ts',
   ],
-  "testPathIgnorePatterns": [
-    "/node_modules/",
-    "/dist/"
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
   ],
-  "transform": {
-    "^.+\\.ts$": "ts-jest"
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
   },
-  "coverageReporters": [
-    "json-summary",
-    "text",
-    "lcov"
+  coverageReporters: [
+    'json-summary',
+    'text',
+    'lcov',
   ],
-  "collectCoverage": true,
-  "collectCoverageFrom": [
-    "./src/**"
-  ]
-}
+  collectCoverage: true,
+  collectCoverageFrom: [
+    './src/**',
+  ],
+};
