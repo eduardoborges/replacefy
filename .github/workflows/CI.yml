@@ -1,5 +1,9 @@
 name: CI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     branches:
@@ -18,7 +22,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Semantic Pull Request
       uses: amannn/action-semantic-pull-request@v5
@@ -62,6 +66,11 @@ jobs:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.
         fetch-depth: 2
+
+
+    - name: Create file
+      run: |
+        echo "Hello, __NAME__" > ./test.txt
 
     - name: Test action
       uses: ./
