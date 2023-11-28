@@ -12,17 +12,30 @@
 
 ## Usage
 
-```yaml
+You can pass a *glob pattern* like this:
 
-- name: Replacefy
-  uses: ./.github/actions/replacefy
+```yaml
+- name: Replace Variables
+  uses: eduardoborges/replacefy@v1
   with:
-    pattern: |
-      ./src/environments/environment.prod.ts
-      ./src/environments/environment.ts
-    replacements: |
-      API_URL=${{ secrets.API_URL }}
-      API_KEY=${{ secrets.API_KEY }}
+    pattern: ./k8s/*.yaml
+  env: |
+    API_URL=https://api.example.com
+    API_KEY=123456789
 ```
 
-## Let's grid it! 💪
+Or all the files like this:
+
+```yaml
+- name: Replace Variables
+  uses: eduardoborges/replacefy@v1
+  with:
+    pattern: |
+      ./k8s/deployment.yaml
+      ./k8s/service.yaml
+  env: |
+    API_URL=${{ secrets.API_URL }}
+    API_KEY=${{ secrets.API_KEY }}
+```
+
+## Thats it! 💪
