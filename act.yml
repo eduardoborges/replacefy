@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  dispatch:
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    - name: Create some files
+      run: |
+        mkdir -p ./test
+        echo "Hello, __NAME__" > ./test/1.txt
+        echo "Hello, {{ NAME }}" > ./test/2.txt
+        echo "__SECRET__" > ./test/3.txt
+
+    - name: Test action
+      uses: ./
+      with:
+        pattern: |
+          ./test/1.txt
+          ./test/2.txt
+          ./test/3.txt
+      env:
+        NAME: "Eduardo"
+        SECRET: '1234567890'
+
+
+    - name: Assert file contents
+      run: |
+        cat ./test/1.txt
+        cat ./test/2.txt
+        cat ./test/3.txt
+
+    # trigger action failure if content of test.txt is not "test"
+    - name: Check file contents 1
+      run: |
+        if [ "$(cat ./test/1.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 2
+      run: |
+        if [ "$(cat ./test/2.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 3
+      run: |
+        if [ "$(cat ./test/3.txt)" != "1234567890" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+
+  test-action2:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    - name: Create some files
+      run: |
+        mkdir -p ./test
+        echo "Hello, __NAME__" > ./test/1.txt
+        echo "Hello, {{ NAME }}" > ./test/2.txt
+        echo "__SECRET__" > ./test/3.txt
+
+    - name: Test action
+      uses: ./
+      with:
+        pattern: ./test/*.txt
+      env:
+        NAME: "Eduardo"
+        SECRET: '1234567890'
+
+
+    - name: Assert file contents
+      run: |
+        cat ./test/1.txt
+        cat ./test/2.txt
+        cat ./test/3.txt
+
+    # trigger action failure if content of test.txt is not "test"
+    - name: Check file contents 1
+      run: |
+        if [ "$(cat ./test/1.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 2
+      run: |
+        if [ "$(cat ./test/2.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 3
+      run: |
+        if [ "$(cat ./test/3.txt)" != "1234567890" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi

@@ -3,7 +3,6 @@
 import * as core from '@actions/core';
 import fs from 'fs/promises';
 import { Path, glob } from 'glob';
-import { cleanString } from './utils';
 
 /**
  * Replace Environment Variables in a file.
@@ -15,8 +14,7 @@ export default async function replace(from: string) {
   let files: string[] | Path[] = await glob(from, { withFileTypes: true });
 
   if (files.length === 0) {
-    files = from.split('\n').map(cleanString);
-    files = from.split(',').map(cleanString);
+    files = from.split(/\r?\n/).map((r) => r.trim());
 
     console.log(files);
 
