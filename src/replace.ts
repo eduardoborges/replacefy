@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 import * as core from '@actions/core';
 import fs from 'fs/promises';
-import { glob } from 'glob';
+import { Path, glob } from 'glob';
 
 /**
  * Replace Environment Variables in a file.
@@ -11,25 +11,35 @@ import { glob } from 'glob';
  * @returns {Promise<boolean>} True if files were replaced.
  */
 export default async function replace(from: string) {
-  const files = await glob(from, { withFileTypes: true });
+  let files: string[] | Path[] = await glob(from, { withFileTypes: true });
 
   if (files.length === 0) {
-    core.info(`[replacefy] no files found matching ${from}`);
-    return false;
+    files = from.split(/\r?\n/).map((r) => r.trim());
+
+    console.log(files);
+
+    if (files.length === 0) {
+      core.info(`[replacefy] no files found matching ${from}`);
+      return false;
+    }
   }
 
   for (const file of files) {
-    core.info(`[replacefy] [read] ${file.fullpath()}`);
-    const contents = await fs.readFile(file.fullpath(), 'utf8');
+    const fullpath = typeof file === 'string' ? file : file.fullpath();
+
+    core.info(`[replacefy] [read] ${fullpath}`);
+    const contents = await fs.readFile(fullpath, 'utf8');
+
     const replaced = contents.replaceAll(
-      /__([A-Z0-9_]+)__|{{([A-Z0-9_]+)}}/g,
-      (_, p1, p2) => {
+      /__([A-Z0-9_]+)__|{{([A-Z0-9_ ]+)}}/g,
+      (_, p1: string, p2: string) => {
         const key = p1 || p2;
-        return process.env[key] || '';
+        return process.env[key.trim()] || '';
       },
     );
-    await fs.writeFile(file.fullpath(), replaced);
-    core.info(`[replacefy] [saved] ${file.fullpath()}`);
+
+    await fs.writeFile(fullpath, replaced);
+    core.info(`[replacefy] [saved] ${fullpath}`);
   }
 
   return true;
