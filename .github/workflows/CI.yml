@@ -70,9 +70,9 @@ jobs:
     - name: Create some files
       run: |
         mkdir -p ./test
-        echo "Hello, __NAME__" > ./1.txt
-        echo "Hello, {{ NAME }}" > ./2.txt
-        echo "__SECRET__" > ./3.txt
+        echo "Hello, __NAME__" > ./test/1.txt
+        echo "Hello, {{ NAME }}" > ./test/2.txt
+        echo "__SECRET__" > ./test/3.txt
 
     - name: Test action
       uses: ./
