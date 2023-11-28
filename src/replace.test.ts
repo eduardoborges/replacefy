@@ -15,7 +15,7 @@ describe('.replace', () => {
   });
 
   afterEach(async () => {
-    await fs.rm(TEST_FOLDER, { recursive: true });
+    // await fs.rm(TEST_FOLDER, { recursive: true });
   });
 
   it('should replace matching __NAME__ pattern ', async () => {
@@ -77,5 +77,22 @@ describe('.replace', () => {
 
     const contents = await fs.readFile(match, 'utf8');
     expect(contents).toMatch('Hello, World!');
+  });
+
+  it('should replace matching {{ NAME }} with spaces and multiple files', async () => {
+    const match = `${TEST_FOLDER}/4.txt\n${TEST_FOLDER}/5.txt`;
+    await fs.writeFile(`${TEST_FOLDER}/4.txt`, 'Hello, {{ NAME }}!', 'utf8');
+    await fs.writeFile(`${TEST_FOLDER}/5.txt`, 'Hello, {{ NAME }}!', 'utf8');
+    process.env.NAME = 'World';
+
+    const result = await replace(match);
+
+    expect(result).toBe(true);
+
+    const files = await glob(match);
+    for (const file of files) {
+      const contents = await fs.readFile(file, 'utf8');
+      expect(contents).toMatch('Hello, World!');
+    }
   });
 });

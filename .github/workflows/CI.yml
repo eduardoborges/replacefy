@@ -77,10 +77,13 @@ jobs:
     - name: Test action
       uses: ./
       with:
-        file: "./test/*.txt"
+        pattern: |
+          ./test/1.txt
+          ./test/2.txt
+          ./test/3.txt
       env:
         NAME: "Eduardo"
-        SECRET: '$\S^`!@#$%^&*()_+-={}|[]\:";<>?,./'
+        SECRET: '1234567890'
 
 
     - name: Assert file contents
@@ -106,7 +109,7 @@ jobs:
 
     - name: Check file contents 3
       run: |
-        if [ "$(cat ./test/3.txt)" != "$\S^`!@#$%^&*()_+-={}|[]\:";<>?,./" ]; then
+        if [ "$(cat ./test/3.txt)" != "1234567890" ]; then
           echo "File contents are not as expected"
           exit 1
         fi

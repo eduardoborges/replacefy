@@ -5,12 +5,15 @@ import replace from './replace';
 
 async function main() {
   try {
-    const file = core.getInput('file');
+    const pattern = core.getInput('pattern');
 
-    if (!file) core.warning('`file` was not set, using default value.');
+    if (!pattern) {
+      core.error('No pattern provided.');
+      return;
+    }
     core.info('Starting Process');
 
-    const res = await replace(file);
+    const res = await replace(pattern);
 
     if (res) {
       core.info('All ok.');

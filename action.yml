@@ -7,12 +7,6 @@ inputs:
   file:
     description: 'The file path to replace env vars'
     required: true
-    default: './test.txt'
-
-# Define your outputs here.
-outputs:
-  file:
-    description: 'The file contents with replaced env vars'
 
 runs:
   using: node20
