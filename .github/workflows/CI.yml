@@ -67,25 +67,43 @@ jobs:
         # a pull request then we can checkout the head.
         fetch-depth: 2
 
-
-    - name: Create file
+    - name: Create some files
       run: |
-        echo "Hello, __NAME__" > ./test.txt
+        mkdir -p ./test
+        echo "Hello, __NAME__" > ./1.txt
+        echo "Hello, {{ NAME }}" > ./2.txt
+        echo "__SECRET__" > ./3.txt
 
     - name: Test action
       uses: ./
       with:
-        file: "./test.txt"
+        file: "./test/*.txt"
       env:
         NAME: "Eduardo"
+        SECRET: '$\S^`!@#$%^&*()_+-={}|[]\:";<>?,./'
+
 
     - name: Asset file contents
       run: cat ./test.txt
 
     # trigger action failure if content of test.txt is not "test"
-    - name: Check file contents
+    - name: Check file contents 1
       run: |
-        if [ "$(cat ./test.txt)" != "Hello, Eduardo" ]; then
+        if [ "$(cat ./test/1.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 2
+      run: |
+        if [ "$(cat ./test/2.txt)" != "Hello, Eduardo" ]; then
+          echo "File contents are not as expected"
+          exit 1
+        fi
+
+    - name: Check file contents 3
+      run: |
+        if [ "$(cat ./test/3.txt)" != "$\S^`!@#$%^&*()_+-={}|[]\:";<>?,./" ]; then
           echo "File contents are not as expected"
           exit 1
         fi
