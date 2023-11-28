@@ -65,4 +65,17 @@ describe('.replace', () => {
       expect(contents).toMatch(/Hello, World!|Hello, World World!/g);
     }
   });
+
+  it('should replace matching {{ NAME }} with spaces', async () => {
+    const match = `${TEST_FOLDER}/4.txt`;
+    await fs.writeFile(match, 'Hello, {{ NAME }}!', 'utf8');
+    process.env.NAME = 'World';
+
+    const result = await replace(match);
+
+    expect(result).toBe(true);
+
+    const contents = await fs.readFile(match, 'utf8');
+    expect(contents).toMatch('Hello, World!');
+  });
 });

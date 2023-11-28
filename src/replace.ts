@@ -22,10 +22,10 @@ export default async function replace(from: string) {
     core.info(`[replacefy] [read] ${file.fullpath()}`);
     const contents = await fs.readFile(file.fullpath(), 'utf8');
     const replaced = contents.replaceAll(
-      /__([A-Z0-9_]+)__|{{([A-Z0-9_]+)}}/g,
-      (_, p1, p2) => {
+      /__([A-Z0-9_]+)__|{{([A-Z0-9_ ]+)}}/g,
+      (_, p1: string, p2: string) => {
         const key = p1 || p2;
-        return process.env[key] || '';
+        return process.env[key.trim()] || '';
       },
     );
     await fs.writeFile(file.fullpath(), replaced);
