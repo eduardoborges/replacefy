@@ -4,7 +4,7 @@ author: 'Eduardo Borges<euduardoborges@gmail.com>'
 
 # Define your inputs here.
 inputs:
-  file:
+  pattern:
     description: 'The file path to replace env vars'
     required: true
 
