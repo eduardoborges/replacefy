@@ -1,6 +1,7 @@
 name: 'Replacefy'
 description: 'A simple action to replace env vars in your Github Actions workflow.'
 author: 'Eduardo Borges<euduardoborges@gmail.com>'
+icon: 'arrow-up-circle'
 
 # Define your inputs here.
 inputs:
