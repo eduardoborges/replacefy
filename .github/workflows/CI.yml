@@ -83,8 +83,11 @@ jobs:
         SECRET: '$\S^`!@#$%^&*()_+-={}|[]\:";<>?,./'
 
 
-    - name: Asset file contents
-      run: cat ./test.txt
+    - name: Assert file contents
+      run: |
+        cat ./test/1.txt
+        cat ./test/2.txt
+        cat ./test/3.txt
 
     # trigger action failure if content of test.txt is not "test"
     - name: Check file contents 1
